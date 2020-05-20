@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>卓越快递业务版</title>
+    <meta name="description" content="卓越快递业务员使用">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">  -->  
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="assets/js/echarts.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery.min.js"></script>
+	<script type='text/javascript' src='/UserTest/dwr/engine.js'></script>
+	<script type='text/javascript' src='/UserTest/dwr/interface/sendVarifyCode.js'></script>
+	<script type='text/javascript' src='/UserTest/dwr/util.js'></script>
+    <script type="text/javascript">
+    	function back(){
+    		window.location.href="login.html";
+    	}	
+    	<!-- 验证码的发送 -->
+		var code;
+		var message;
+		var telCode;
+		var password;
+   		function sendMessage(){
+   			var flag=checkPWD();
+   			if(flag){
+   				telCode=document.getElementById("phone").value;
+   	   			sendVarifyCode.send(telCode,callback);
+   				//alert("已发送验证码，请查收，您的手机号为"+telCode);
+   			}
+   		}
+   		function callback(data){
+   			alert("已发送验证码，请查收，您的手机号为"+telCode);
+   			code=data;
+   		}
+   		function check(){
+   			message=document.getElementById("message").value;
+   			if(code==message){
+   				reset();
+   				alert("已重置密码，请重新登陆");
+   				//return true;
+   			}
+   			else{
+   				alert("验证码错误");
+   				return false;
+   			}
+   		}
+   		function checkPWD(){
+   			var p1=document.getElementById("password1").value;
+   			var p2=document.getElementById("password2").value;
+   			if(p1==""){
+   				document.getElementById("tishi").innerHTML="<br><font color='red'>密码不能为空！</font>";
+   				return false;
+   			}
+   			if(p1!=p2){
+   				document.getElementById("tishi").innerHTML="<br><font color='red'>两次输入密码不一致！</font>";
+   		        return false;
+   			}else{
+   				document.getElementById("tishi").innerHTML="<br><font color='green'>密码一致</font>";
+	   			return true;
+   			}
+   		}
+   		function reset(){
+   			password=document.getElementById("password1").value;
+   			$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/resetUserPWD/"+telCode+"/"+password,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(data){ 	
+    	        	password=data.PWD;
+    	           // alert("修改成功，请重新登陆"+password);
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常");
+    	        }
+    	    });
+   		}
+    </script>
+</head>
+
+<body data-type="login">
+
+  <div class="am-g myapp-login">
+	<div class="myapp-login-logo-block  tpl-login-max">
+		<div class="myapp-login-logo-text">
+			<div class="myapp-login-logo-text">
+				<span> Reset</span> <i class="am-icon-skyatlas"></i>
+				
+			</div>
+		</div>
+
+		<div class="login-font">
+			<span onclick="back();">返回 </span>
+		</div> 
+		<div class="am-u-sm-10 login-am-center">
+			<form class="am-form" onsubmit="return check();" action="login.html">
+				<fieldset>
+					<div class="am-form-group">
+						<input type="tel" class="" id="phone" placeholder="输入手机号码" required="required">
+					</div>
+
+					<div class="am-form-group">
+						<input type="password" class="" id="password1" placeholder="密码" required="required" style="border-radius:0;">
+					</div>
+					<div class="am-form-group">
+						<input type="password" class="" id="password2" placeholder="确认密码" required="required">
+						<span id="tishi"></span>
+					</div>					
+					<p><button type="button" class="am-btn am-btn-default" onclick="sendMessage()">发送验证码</button></p>
+					<div class="am-form-group">
+						<input type="text" class="" id="message" placeholder="手机验证码" style="border-radius:5px;">
+					</div>
+					<p><button type="submit" class="am-btn am-btn-default">重置密码</button></p>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/amazeui.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script type="text/javascript" src="js/jquery.cookie.js"></script> 
+</body>
+
+</html>

@@ -1,0 +1,372 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>卓越快递业务版</title>
+    <meta name="description" content="卓越快递业务员使用">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">  -->  
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="assets/js/echarts.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+    	var userId;
+    	var userName;
+    	var userTel;
+    	var transNodeId;
+    	var userStatus;
+    	var transNodeName;
+	    $(document).ready(function show(){
+			if($.cookie('user_id')!=null){
+				userId=$.cookie('user_id');
+            	userName=$.cookie('user_name');
+				$("#username").html("业务员"+userName); 
+            	userTel=$.cookie('user_telCode');
+            	transNodeId=$.cookie('user_dptID');
+            	//alert(transNodeId);
+            	getNode(transNodeId);
+            	userStatus=$.cookie('user_status');
+            	document.getElementById('denglu').style.display = "none";
+	    	}else{
+	    		alert("您未登录，请先登录！");
+	    		window.location.href="login.html";
+	    	}
+		});
+	    function getNode(transNodeId){
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getNode/"+transNodeId,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(data){ 	           
+    	            setData(data);  
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常+++");
+    	        }
+    	    });
+    		return false;
+    	}
+	    function setData(data) {
+	    	transNodeName=data.nodeName;
+	    	$("#nodename").html("营业网点:"+transNodeName); 
+	 	  	$.cookie('node_name', transNodeName,{ path: '/' });
+        }
+	    function logout(){
+			var cookies = $.cookie();
+    		for(var cookie in cookies) {		    			
+    		   $.removeCookie(cookie,{path:"/"});
+    		}
+    		alert("已注销");
+    		document.location.href="login.html";
+	    }
+    </script>
+</head>
+
+<body data-type="index">
+
+
+    <header class="am-topbar am-topbar-inverse admin-header">
+        <div class="am-topbar-brand">
+            <a href="index.html" class="">
+                <img src="assets/img/logo.png" height="50px" width="60px">
+                <span style="color: #99BBFF">卓越快递</span>
+            </a>
+        </div>
+        <div class="am-icon-list tpl-header-nav-hover-ico am-fl am-margin-right">
+
+        </div>
+
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list tpl-header-list">
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="am-icon-bell-o"></span> 提醒 <span class="am-badge tpl-badge-success am-round">5</span></span>
+                    </a>
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-content-external">
+                            <h3>你有 <span class="tpl-color-success">5</span> 条提醒</h3><a href="###">全部</a></li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-plus tpl-dropdown-ico-btn-size tpl-badge-success"></span> 【预览模块】移动端 查看时 手机、电脑框隐藏。</a>
+                            <span class="tpl-dropdown-list-fr">3小时前</span>
+                        </li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-check tpl-dropdown-ico-btn-size tpl-badge-danger"></span> 移动端，导航条下边距处理</a>
+                            <span class="tpl-dropdown-list-fr">15分钟前</span>
+                        </li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-bell-o tpl-dropdown-ico-btn-size tpl-badge-warning"></span> 追加统计代码</a>
+                            <span class="tpl-dropdown-list-fr">2天前</span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle  style="display:">
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="am-icon-comment-o">消息</span>  <span class="am-badge tpl-badge-danger am-round">1</span>
+                    </a>
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-content-external">
+                            <h3>你有 <span class="tpl-color-danger">1</span> 条新消息</h3><a href="###">全部</a></li>
+                        <li>
+                            <a href="#" class="tpl-dropdown-content-message">
+                                <span class="tpl-dropdown-content-photo">
+                      <img src="assets/img/user08.png" alt=""> </span>
+                                <span class="tpl-dropdown-content-subject">
+                      <span class="tpl-dropdown-content-from"> 小张 </span>
+                                <span class="tpl-dropdown-content-time">10分钟前 </span>
+                                </span>
+                                <span class="tpl-dropdown-content-font"> 今天也要加油挣米粒呀 </span>
+                            </a>
+   
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="tpl-header-list-user-nick" id="username"></span><span class="tpl-header-list-user-ico"> <img src="assets/img/user08.png"></span>
+                    </a>
+                    <ul class="am-dropdown-content">
+                        <li><a href="#" onclick="logout()"><span class="am-icon-power-off"></span> 退出</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="tpl-header-list-link" onclick="logout()"><span class="am-icon-sign-out tpl-header-list-ico-out-size"></span></a></li>
+            </ul>
+        </div>
+    </header>
+
+
+
+
+
+
+
+    <div class="tpl-page-container tpl-page-header-fixed">
+
+
+        <div class="tpl-left-nav tpl-left-nav-hover">
+            <div class="tpl-left-nav-title">
+           		     功能列表
+            </div>
+            <div class="tpl-left-nav-list">
+                <ul class="tpl-left-nav-menu">
+                    <li class="tpl-left-nav-item">
+                        <a href="index.html" class="nav-link active">
+                            <i class="am-icon-home"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="clientmanage.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-group"></i>
+                            <span>客户管理</span>
+                            <i class="tpl-left-nav-content tpl-badge-danger"  style="display:none">12</i>
+                        </a>
+                    </li>
+					<li class="tpl-left-nav-item">
+                        <a href="expresssheet.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-pencil-square-o"></i>
+                            <span>快递单生成</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="transnodemanage.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-institution"></i>
+                            <span>网点管理</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-send"></i>
+                            <span>快递查询</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                                <a href="IdQuery.html">
+                                    <span>快递单号查询</span>
+                                </a>
+								<a href="TelReceiveQuery.html">
+                                    <span>收货人手机号查询</span>
+                                </a>
+                                <a href="TelSendQuery.html">
+                                    <span>寄件人手机号查询</span>
+                                </a>
+
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-truck"></i>
+                            <span>包裹管理</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                            	 <a href="CreatePackage.html">
+                                    <span>包裹创建</span>
+                                </a>
+                            	
+                            	<a href="PackageList.html">
+                                    <span>本网点包裹管理</span>
+                                </a>
+                            	
+                                <a href="PackageIdQuery.html">
+                                    <span>包裹内容查询</span>
+                                </a>
+
+                                <a href="PackageHistory.html">
+                                    <span>包裹跟踪</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+ 					<li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-bar-chart"></i>
+                            <span>数据统计</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <!-- <ul class="tpl-left-nav-sub-menu" style="display: block;"> -->
+                        <ul class="tpl-left-nav-sub-menu" >
+                            <li>
+                                <a href="https://bot.4paradigm.com/admin/system/robot/history?page=1&keyword=&start=&end=&channelType=ALL" target="_blank">
+                                    <span>服务评价统计</span>
+                                </a>
+                                <a href="sendStatistics.html">
+                                    <span>寄件地快件统计</span>
+                                </a>
+                                <a href="sendStatistics.html">
+                                    <span>收件地快件统计</span>
+                                </a>
+                                <a href="timeStatistics.html">
+                                    <span>寄件时间统计</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="tpl-left-nav-item" id="denglu">
+                        <a href="login.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-key"></i>
+                            <span>登录</span>
+
+                        </a>
+                    </li>
+                     <li class="tpl-left-nav-item">
+                        <a class="nav-link tpl-left-nav-link-list" onclick="logout()">
+                            <i class="am-icon-power-off"></i>
+                            <span>注销</span>
+
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="tpl-content-wrapper">
+            <div class="tpl-content-page-title">
+              	  卓越快递
+            </div>
+            <ol class="am-breadcrumb">
+                <li><a href="index.html" class="am-icon-home">首页</a></li>
+                <li class="am-active">内容</li>
+            </ol>
+            <div class="tpl-content-scope">
+                <div class="note note-info">
+                    <h3>
+                        <span class="close" data-close="note" id="nodename"> </span>
+                    </h3>
+                    <p>今天也要努力工作呀！</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="am-u-lg-3 am-u-md-6 am-u-sm-12">
+                    <div class="dashboard-stat blue">
+                        <div class="visual">
+                            <i class="am-icon-comments-o"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number"> <span id="num1"></span></div>
+                            <div class="desc"> 今日需上门取件 </div>
+                        </div>
+                        <a class="more" href="appointments.html"> 查看更多
+                    <i class="m-icon-swapright m-icon-white"></i>
+                </a>
+                    </div>
+                </div>
+                <div class="am-u-lg-3 am-u-md-6 am-u-sm-12">
+                    <div class="dashboard-stat red">
+                        <div class="visual">
+                            <i class="am-icon-bar-chart-o"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number"><span id="num1"></span> </div>
+                            <div class="desc"> 今日需派送 </div>
+                        </div>
+                        <a class="more" href="deliveries.html"> 查看更多
+                    <i class="m-icon-swapright m-icon-white"></i>
+                </a>
+                    </div>
+                </div>
+                <div class="am-u-lg-3 am-u-md-6 am-u-sm-12" style="display: none;">
+                    <div class="dashboard-stat green">
+                        <div class="visual">
+                            <i class="am-icon-apple"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number"> 目标越接近 </div>
+                            <div class="desc"> 今日目标</div>
+                        </div>
+                        <a class="more" href="#"> .
+                    <i class="m-icon-swapright m-icon-white"></i>
+                </a>
+                    </div>
+                </div>
+                <div class="am-u-lg-3 am-u-md-6 am-u-sm-12" style="display: none;">
+                    <div class="dashboard-stat purple">
+                        <div class="visual">
+                            <i class="am-icon-android"></i>
+                        </div>
+                        <div class="details">
+                            <div class="number"> 勇争第一 </div>
+                            <div class="desc"> 今日目标 </div>
+                        </div>
+                        <a class="more" href="#"> .
+                </a>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+
+
+        </div>
+</div>
+ 
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/amazeui.min.js"></script>
+    <script src="assets/js/iscroll.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script> 
+</body>
+
+</html>

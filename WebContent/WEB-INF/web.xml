@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>  
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance
+    http://www.springmodules.org/schema/cache/springmodules-cache.xsd 
+    http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+
+
+    <servlet> 
+        <servlet-name>dwr</servlet-name>
+		<servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class> 
+		<init-param>
+		     <param-name>debug</param-name>
+		     <param-value>true</param-value>
+		</init-param> 
+	</servlet> 
+	<servlet-mapping> 
+	    <servlet-name>dwr</servlet-name>
+	    <url-pattern>/dwr/*</url-pattern> 
+	</servlet-mapping>
+    
+
+
+</web-app>

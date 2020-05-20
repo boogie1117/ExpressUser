@@ -1,0 +1,774 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>卓越快递业务版</title>
+    <meta name="description" content="卓越快递业务员使用">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">  -->  
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="assets/js/echarts.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+
+            // 初始化省市区
+            initAddress1();
+
+            // 更改省份后的操作
+            $("select[name='province1']").change(function() {
+
+                var provCode = $("select[name='province1']").val();
+
+                getCity1(provCode);
+
+            });
+
+            // 更改城市后的操作
+            $("select[name='city1']").change(function() {
+                var cityCode = $("select[name='city1']").val();
+                getArea1(cityCode);
+            });
+
+        });
+
+        function initAddress1() {
+
+            var firstProvCode;
+            // ajax请求所有省份
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getProvinceList", {
+                method : "initProvince"
+            }, function(data) {
+
+                $.each(data, function(i, d) {
+                    $("select[Name='province1']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个省份的code
+                firstProvCode = data[0].Code;
+                // 根据第一个省份code获取对应城市列表
+                getCity1(firstProvCode);
+            }, 'json');
+
+        }
+
+        //获取对应城市列表（里面包括获取第一个城市的区县列表）
+        function getCity1(provCode) {
+
+            var firstCityCode;
+
+            // ajax请求所有市级单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCityList/"+provCode, {
+//                method : "getCity",
+//                provCode : provCode
+            }, function(data) {
+
+                // 先清空城市下拉框
+                $("select[name='city1']").empty();
+
+                $.each(data, function(i, d) {
+                    $("select[name='city1']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个城市的code
+                firstCityCode = data[0].Code;
+                // 根据第一个城市code获取对应区县列表
+                getArea1(firstCityCode);
+
+            }, 'json');
+        }
+
+        function getArea1(cityCode) {
+
+            // ajax请求所有区县单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getTownList/"+cityCode, {
+//                method : "getArea",
+//                cityCode : cityCode
+            }, function(data) {
+
+                // 先清空区县下拉框
+                $("select[name='area1']").empty();
+                $.each(data, function(i, d) {
+                    $("select[name='area1']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+            }, 'json');
+        }
+		
+    </script>
+    <script type="text/javascript">
+        $(function() {
+
+            // 初始化省市区
+            initAddress();
+
+            // 更改省份后的操作
+            $("select[name='province']").change(function() {
+
+                var provCode = $("select[name='province']").val();
+
+                getCity(provCode);
+
+            });
+
+            // 更改城市后的操作
+            $("select[name='city']").change(function() {
+                var cityCode = $("select[name='city']").val();
+                getArea(cityCode);
+            });
+
+        });
+
+        function initAddress() {
+
+            var firstProvCode;
+            // ajax请求所有省份
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getProvinceList", {
+                method : "initProvince"
+            }, function(data) {
+
+                $.each(data, function(i, d) {
+                    $("select[Name='province']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个省份的code
+                firstProvCode = data[0].Code;
+                // 根据第一个省份code获取对应城市列表
+                getCity(firstProvCode);
+            }, 'json');
+
+        }
+
+        //获取对应城市列表（里面包括获取第一个城市的区县列表）
+        function getCity(provCode) {
+
+            var firstCityCode;
+
+            // ajax请求所有市级单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getCityList/"+provCode, {
+//                method : "getCity",
+//                provCode : provCode
+            }, function(data) {
+
+                // 先清空城市下拉框
+                $("select[name='city']").empty();
+
+                $.each(data, function(i, d) {
+                    $("select[name='city']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+
+                // 获取第一个城市的code
+                firstCityCode = data[0].Code;
+                // 根据第一个城市code获取对应区县列表
+                getArea(firstCityCode);
+
+            }, 'json');
+        }
+
+        function getArea(cityCode) {
+
+            // ajax请求所有区县单位
+            $.get("http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getTownList/"+cityCode, {
+//                method : "getArea",
+//                cityCode : cityCode
+            }, function(data) {
+
+                // 先清空区县下拉框
+                $("select[name='area']").empty();
+                $.each(data, function(i, d) {
+                    $("select[name='area']").append(
+                                    "<option value='"+d.Code+"'>" + d.Name
+                                    + "</option>");
+                });
+            }, 'json');
+        }
+    </script>
+    <script type="text/javascript">
+    	var userId;
+    	var userName;
+    	var userTel;
+    	var transNodeId;
+    	var userStatus;
+    	var appointmentid=0;
+    	var sender=0;
+    	var receiver=0;
+    	var flaga;
+	    $(document).ready(function show(){
+			if($.cookie('user_id')!=null){
+				userId=$.cookie('user_id');
+            	userName=$.cookie('user_name');
+				$("#username").html("业务员"+userName); 
+            	userTel=$.cookie('user_telCode');
+            	transNodeId=$.cookie('user_dptID');
+            	userStatus=$.cookie('user_status');
+            	document.getElementById('denglu').style.display = "none";
+	    	}else{
+	    		alert("您未登录，请先登录！");
+	    		window.location.href="login.html";
+	    	}
+		});
+	    function logout(){
+			var cookies = $.cookie();
+    		for(var cookie in cookies) {		    			
+    		   $.removeCookie(cookie,{path:"/"});
+    		}
+    		alert("已注销");
+    		document.location.href="login.html";
+	    }
+	    function showAppointment(){
+	    	appointmentid=document.getElementById("appointmentid").value;
+	    	//alert(appointmentid);
+	    	if(""!=appointmentid&&null!=appointmentid){
+	    		$.ajax({
+	    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/getAppointmentListById/"+appointmentid,
+	    	        type: "get",
+	    	        dataType: "json",
+	    	        success: function(data){ 
+	    	        	if(data.status==2){
+	    	        		setData(data);
+	    	        	}
+	    	        	else if(data.status==0){
+	    	        		alert("该预约单还未分配给取件人员！");
+	    	        	}else if(data.status==1){
+	    	        		alert("取件人员未上门取件");
+	    	        	}else{
+	    	        		alert("该订单已处理");
+	    	        	}
+	    	        },
+	    	        error: function(msg){
+	    	            alert("该预约单不存在！");
+	    	        }
+	    	    });
+	    	}else{
+	    		alert("预约单号不能为空！");
+	    	}
+	    }
+	    function setData(data) {
+	    	sender=data.sender.ID;
+	    	receiver=data.recever.ID;
+	    	$("#name1").val(data.sender.name);
+			$("#name1").attr("readonly","readonly");
+			$("#phone1").val(data.sender.telCode);
+			$("#phone1").attr("readonly","readonly");
+			//$("#area1").val(data.regionCode);
+			document.getElementById('region1').style.display = "";
+			document.getElementById('regioncode1').style.display = "none";
+			$("#region1").val(data.sender.regionString);
+			$("#region1").attr("readonly","readonly");
+			$("#address1").val(data.sender.address);
+			$("#address1").attr("readonly","readonly");
+			
+			$("#name").val(data.recever.name);
+			$("#name").attr("readonly","readonly");
+			$("#phone").val(data.recever.telCode);
+			$("#phone").attr("readonly","readonly");
+			//$("#area").val(data.regionCode);
+			document.getElementById('region').style.display = "";
+			document.getElementById('regioncode').style.display = "none";
+			$("#region").val(data.recever.regionString);
+			$("#region").attr("readonly","readonly");
+			$("#address").val(data.recever.address);
+			$("#address").attr("readonly","readonly");
+			
+			$("#remarks").val(data.remarks);
+			
+        }
+	    function addSender(){
+    		phone=$("#phone1").val();
+    		name=document.getElementById("name1").value;
+    		regionCode=$(".area1 option:selected").val();
+    		address=document.getElementById("address1").value;
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/addCustomer/"+0+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+    	        type: "get",
+    	        dataType: "json",
+    	        async: false,
+    	        success: function(data){
+    	        	sender=data.ID;
+    	        	if(clientId!=0){
+    	        		alert("寄件人添加成功,编号为"+sender);
+    	        	}
+    	        	//return sender;
+    	        },
+    	        error: function(msg){
+    	            alert("寄件人信息有误，请检查填写信息是否完整"+msg);
+    	        }
+    	    });
+    	}
+	    function addReceiver(){
+    		phone=$("#phone").val();
+    		//alert(phone);
+    		name=document.getElementById("name").value;
+    		regionCode=$(".area option:selected").val();
+    		//alert(regionCode);
+    		address=document.getElementById("address").value;
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/addCustomer/"+0+"/"+phone+"/"+name+"/"+regionCode+"/"+address,
+    	        type: "get",
+    	        async: false,
+    	        dataType: "json",
+    	        success: function(data){
+    	        	receiver=data.ID;
+    	        	if(clientId!=0){
+    	        		alert("收件人添加成功,编号为"+receiver);
+    	        	}
+    	        },
+    	        error: function(msg){
+    	            alert("收件人信息有误，请检查填写信息是否完整"+msg);
+    	        }
+    	    });
+    	}
+	    function generate(){
+			var defer = $.Deferred();
+	    	if(0==sender){
+	    		addSender();
+	    		addReceiver();
+	    	}
+	    	var weight=$('input:radio:checked').val()+1;
+    		var type=$(".type option:selected").val();
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/addExpressSheet/"+sender+"/"+receiver+"/"+weight+"/"+type+"/"+transNodeId,
+    	        type: "get",
+    	        dataType: "json",
+    	        async:false,
+    	        success: function(data){
+    	        	alert("快递单已生成");
+    	        	showExpress(data);
+    	        	changeAppoinmentStatus();
+    	        	//flaga=true;
+    	        },
+    	        error: function(msg){
+    	            alert("请求无效，请检查填写信息是否完整"+msg);
+    	            //flaga=false;
+    	        }
+    	    });
+    		
+//  	    window.location.href="expressinformation.html";
+			//return flagb;
+	    }
+	    function changeAppoinmentStatus(){
+	    	//alert(appointmentid);
+    		//alert("+++");
+			if(appointmentid==0){
+				//alert("快递单已生成");
+//				window.location.href="expressinformation.html";
+				document.forms[0].action="expressinformation.html";
+				document.forms[0].submit();
+				
+			}else{
+				$.ajax({
+	    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/changeAppointmentStatus/"+appointmentid+"/"+3,
+	    	        type: "get",
+	    	        dataType: "json",
+	    	        async:false,
+	    	        success: function(data){
+	    	        	//flagb=true;
+	    	        	//alert("预约单状态已修改完成");
+	    	        	//window.location.href="expressinformation.html";
+		    	        document.forms[0].action="expressinformation.html";
+						document.forms[0].submit();
+	    	   	 	},
+	    	        error: function(msg){
+	    	            alert("网络异常，预约单状态无法修改，请手动修改预约单状态"+msg);
+	    	            //flagb=false;
+	    	        }
+	    	    });
+			}
+	    }
+	    function showExpress(data){
+	    	remarks=document.getElementById("remarks").value;
+	    	var d = new Date();
+			var da = d.getFullYear() + "年" +(d.getMonth() + 1) + "月" + d.getDate() + "日";
+			//alert(da);
+        	$.cookie('express_id', data.ID,{ path: '/' });
+        	$.cookie('express_remarks', remarks,{ path: '/' });
+        	$.cookie('express_time', da,{ path: '/' });
+	    }
+    </script>
+</head>
+
+<body data-type="index">
+
+
+    <header class="am-topbar am-topbar-inverse admin-header">
+        <div class="am-topbar-brand">
+            <a href="index.html" class="">
+                <img src="assets/img/logo.png" height="50px" width="60px">
+                <span style="color: #99BBFF">卓越快递</span>
+            </a>
+        </div>
+        <div class="am-icon-list tpl-header-nav-hover-ico am-fl am-margin-right">
+
+        </div>
+
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list tpl-header-list">
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="am-icon-bell-o"></span> 提醒 <span class="am-badge tpl-badge-success am-round">5</span></span>
+                    </a>
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-content-external">
+                            <h3>你有 <span class="tpl-color-success">5</span> 条提醒</h3><a href="###">全部</a></li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-plus tpl-dropdown-ico-btn-size tpl-badge-success"></span> 【预览模块】移动端 查看时 手机、电脑框隐藏。</a>
+                            <span class="tpl-dropdown-list-fr">3小时前</span>
+                        </li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-check tpl-dropdown-ico-btn-size tpl-badge-danger"></span> 移动端，导航条下边距处理</a>
+                            <span class="tpl-dropdown-list-fr">15分钟前</span>
+                        </li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-bell-o tpl-dropdown-ico-btn-size tpl-badge-warning"></span> 追加统计代码</a>
+                            <span class="tpl-dropdown-list-fr">2天前</span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle  style="display:">
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="am-icon-comment-o">消息</span>  <span class="am-badge tpl-badge-danger am-round">1</span>
+                    </a>
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-content-external">
+                            <h3>你有 <span class="tpl-color-danger">1</span> 条新消息</h3><a href="###">全部</a></li>
+                        <li>
+                            <a href="#" class="tpl-dropdown-content-message">
+                                <span class="tpl-dropdown-content-photo">
+                      <img src="assets/img/user08.png" alt=""> </span>
+                                <span class="tpl-dropdown-content-subject">
+                      <span class="tpl-dropdown-content-from"> 小张 </span>
+                                <span class="tpl-dropdown-content-time">10分钟前 </span>
+                                </span>
+                                <span class="tpl-dropdown-content-font"> 今天也要加油挣米粒呀 </span>
+                            </a>
+   
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="tpl-header-list-user-nick" id="username"></span><span class="tpl-header-list-user-ico"> <img src="assets/img/user08.png"></span>
+                    </a>
+                    <ul class="am-dropdown-content">
+                        <li><a href="#" onclick="logout()"><span class="am-icon-power-off"></span> 退出</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="tpl-header-list-link" onclick="logout()"><span class="am-icon-sign-out tpl-header-list-ico-out-size"></span></a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="tpl-page-container tpl-page-header-fixed">
+        <div class="tpl-left-nav tpl-left-nav-hover">
+            <div class="tpl-left-nav-title">
+           		     功能列表
+            </div>
+            <div class="tpl-left-nav-list">
+                <ul class="tpl-left-nav-menu">
+                    <li class="tpl-left-nav-item">
+                        <a href="index.html" class="nav-link ">
+                            <i class="am-icon-home"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="clientmanage.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-group"></i>
+                            <span>客户管理</span>
+                            <i class="tpl-left-nav-content tpl-badge-danger"  style="display:none">12</i>
+                        </a>
+                    </li>
+					<li class="tpl-left-nav-item">
+                        <a href="expresssheet.html" class="nav-link tpl-left-nav-link-list active">
+                            <i class="am-icon-pencil-square-o"></i>
+                            <span>快递单生成</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="transnodemanage.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-institution"></i>
+                            <span>网点管理</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-send"></i>
+                            <span>快递查询</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                                <a href="IdQuery.html">
+                                    <span>快递单号查询</span>
+                                </a>
+								<a href="TelReceiveQuery.html">
+                                    <span>收货人手机号查询</span>
+                                </a>
+                                <a href="TelSendQuery.html">
+                                    <span>寄件人手机号查询</span>
+                                </a>
+
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-truck"></i>
+                            <span>包裹管理</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                            	 <a href="CreatePackage.html">
+                                    <span>包裹创建</span>
+                                </a>
+                            	
+                            	<a href="PackageList.html">
+                                    <span>本网点包裹管理</span>
+                                </a>
+                            	
+                            	
+                                <a href="PackageIdQuery.html">
+                                    <span>包裹内容查询</span>
+                                </a>
+
+                                <a href="PackageHistory.html">
+                                    <span>包裹跟踪</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+ 					<li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-bar-chart"></i>
+                            <span>数据统计</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <!-- <ul class="tpl-left-nav-sub-menu" style="display: block;"> -->
+                        <ul class="tpl-left-nav-sub-menu" >
+                            <li>
+                                <a href="https://bot.4paradigm.com/admin/system/robot/history?page=1&keyword=&start=&end=&channelType=ALL" target="_blank">
+                                    <span>服务评价统计</span>
+                                </a>
+                                <a href="sendStatistics.html">
+                                    <span>寄件地快件统计</span>
+                                </a>
+                                <a href="sendStatistics.html">
+                                    <span>收件地快件统计</span>
+                                </a>
+                                <a href="timeStatistics.html">
+                                    <span>寄件时间统计</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="tpl-left-nav-item" id="denglu">
+                        <a href="login.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-key"></i>
+                            <span>登录</span>
+
+                        </a>
+                    </li>
+                     <li class="tpl-left-nav-item">
+                        <a class="nav-link tpl-left-nav-link-list" onclick="logout()">
+                            <i class="am-icon-power-off"></i>
+                            <span>注销</span>
+
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tpl-content-wrapper">
+            <div class="tpl-content-page-title">
+                	快递单生成
+            </div>
+            <ol class="am-breadcrumb">
+                <li><a href="#" class="am-icon-pencil-square-o">快递单生成</a></li>
+                <li><a href="#">表单</a></li>
+            </ol>
+            
+            <div class="tpl-portlet-components">
+                <div class="portlet-title">
+                    <div class="caption font-green bold">
+                        <span class="am-icon-code"></span> 表单
+                    </div>
+                    <div class="tpl-portlet-input tpl-fz-ml">
+                        <div class="portlet-input input-small input-inline">
+                            <div class="input-icon right">
+                                <i class="am-icon-cloud-download" onclick="showAppointment()"></i>
+                                <input type="text" id="appointmentid" class="form-control form-control-solid" placeholder="添加预约单信息" > </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <form action="#" class="am-form am-form-horizontal" onsubmit="return generate();">
+                <div class="tpl-block" style="display:inline-block;width:490px">
+                    <div class="am-g tpl-amazeui-form">
+                        <div class="am-u-sm-12 am-u-md-9">
+                            <table >
+                            	<thead align="center">寄件人信息</thead>
+                            	<p></p>
+                                <div class="am-form-group">
+                                    <label for="name1" class="am-u-sm-3 am-form-label">姓名</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="text" id="name1" placeholder="姓名 " required="required" contenteditable="true">
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="phone1" class="am-u-sm-3 am-form-label">电话</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="tel" id="phone1" placeholder="联系方式" required="required">
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="region" class="am-u-sm-3 am-form-label">地区</label>
+                                    <div class="am-u-sm-9">
+										<p style="display:" id="regioncode1"> <select name='province1' class=""></select>
+				                         <select name='city1' class="" ></select>               
+				                		 <select name='area1' class="area1"></select></p>
+				                		 <input type="text" id="region1" style="display:none">
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="address1" class="am-u-sm-3 am-form-label">地址</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="text" id="address1" placeholder="详细地址" required="required">
+                                    </div>
+                                </div>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+				<div class="tpl-block" style="display:inline-block;margin-left:10px;width:490px">
+                    <div class="am-g tpl-amazeui-form">
+                        <div class="am-u-sm-12 am-u-md-9">
+                            <table class="am-form am-form-horizontal">
+                            <thead align="center">收件人信息</thead>
+                            	<p></p>
+                               <div class="am-form-group">
+                                    <label for="name" class="am-u-sm-3 am-form-label">姓名</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="text" id="name" placeholder="姓名 " required="required">
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="phone" class="am-u-sm-3 am-form-label" style="width:80px">电话</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="tel" id="phone" placeholder="联系方式" required="required">
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="region" class="am-u-sm-3 am-form-label">地区</label>
+                                    <div class="am-u-sm-9">
+										<p style="display:" id="regioncode"> <select name='province' class=""></select>
+				                         <select name='city' class="" ></select>               
+				                		 <select name='area' class="area"></select></p>
+				                		 <input type="text" id="region" style="display:none">
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="address" class="am-u-sm-3 am-form-label">地址</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="text" id="address" placeholder="详细地址" required="required">
+                                    </div>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tpl-block">
+                	<div class="am-g tpl-amazeui-form">
+                			<table class="am-form am-form-horizontal">
+                            <center>快件信息</center>
+                            <p></p>
+                            	<div class="am-form-group">
+                                    <label for="type" class="am-u-sm-3 am-form-label">快件类型</label>
+                                    <div class="am-u-sm-9">
+					                <select id="type" class="type" style="width:450px">
+					                    <option value="0">文件</option>
+					                    <option value="1">数码产品</option>
+					                    <option value="2">生活用品</option>
+					                    <option value="3">服饰</option>
+					                    <option value="4">食品</option>
+					                    <option value="5">其他</option>
+					                </select>
+                                    </div>
+                                </div>
+                                <div class="am-form-group">
+                                	<label  class="am-u-sm-3 am-form-label">预估重量</label>&nbsp;&nbsp;
+					                <label><input type="radio" name="weight" value="0" checked="checked"><small>1kg及以下</small> </label>
+					                <label><input type="radio" name="weight" value="1"><small>1kg~2kg</small> </label>
+					                <label><input type="radio" name="weight" value="2"><small>2kg~3kg</small> </label>
+					                <label><input type="radio" name="weight" value="3"><small>3kg以上 </small></label>
+                                </div>
+                                <div class="am-form-group">
+                                    <label for="remarks" class="am-u-sm-3 am-form-label">备注</label>
+                                    <div class="am-u-sm-9">
+                                        <input type="text" id="remarks" placeholder="备注" style="width:450px" value="备注">
+                                    </div>
+                                </div>
+                                <div class="am-form-group">
+                                    <div class="am-u-sm-9 am-u-sm-push-3">
+                                      <center><input type="submit" class="am-btn am-btn-primary" value="提交表单"></center>  
+                                    </div>
+                                </div>
+                            </table>
+                	</div>
+                </div>
+                </form>
+            </div>
+		
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+        
+</div>
+ 
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/amazeui.min.js"></script>
+    <script src="assets/js/iscroll.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script> 
+</body>
+
+</html>

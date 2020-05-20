@@ -1,0 +1,440 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>卓越快递业务版</title>
+    <meta name="description" content="卓越快递业务员使用">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">  -->  
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    
+    <script type="text/javascript" src="jquery/jquery.min.js"></script>
+    <script src="assets/js/echarts.min.js"></script>
+    <script type="text/javascript">
+    	var userId;
+    	var userName;
+    	var userTel;
+    	var transNodeId;
+    	var userStatus;
+    	var transNodeName;
+    	var value1=[];
+    	var value2=[];
+		var province=new Array();
+		for( var i=0;i<34;i++){
+			province[i]=new Array();
+			province[i][1] = 0;
+	    	province[i][2] = 0; 
+		}
+		province[0][0]=11;province[1][0]=12;province[2][0]=13;province[3][0]=14;province[4][0]=15;
+		province[5][0]=21;province[6][0]=22;province[7][0]=23;province[8][0]=31;province[9][0]=32;
+		province[10][0]=33;province[11][0]=34;province[12][0]=35;province[13][0]=36;province[14][0]=37;
+		province[15][0]=41;province[16][0]=42;province[17][0]=43;province[18][0]=44;province[19][0]=45;
+		province[20][0]=46;province[21][0]=50;province[22][0]=51;province[23][0]=52;province[24][0]=53;
+		province[25][0]=54;province[26][0]=61;province[27][0]=62;province[28][0]=63;province[29][0]=64;
+		province[30][0]=65;province[31][0]=71;province[32][0]=81;province[33][0]=82;
+		province[0][3]='北京市'; province[1][3]='天津市'; province[2][3]='河北省'; province[3][3]='山西省'; province[4][3]='内蒙古自治区';
+		province[5][3]='辽宁省'; province[6][3]='吉林省'; province[7][3]='黑龙江省'; province[8][3]='上海市'; province[9][3]='江苏省';
+		province[10][3]='浙江省'; province[11][3]='安徽省'; province[12][3]='福建省'; province[13][3]='江西省'; province[14][3]='山东省';
+		province[15][3]='河南省'; province[16][3]='湖北省'; province[17][3]='湖南省'; province[18][3]='广东省'; province[19][3]='广西壮族自治区';
+		province[20][3]='海南省'; province[21][3]='重庆市'; province[22][3]='四川省'; province[23][3]='贵州省'; province[24][3]='云南省';
+		province[25][3]='西藏自治区'; province[26][3]='陕西省'; province[27][3]='甘肃省'; province[28][3]='青海省'; province[29][3]='宁夏回族自治区';
+		province[30][3]='新疆维吾尔自治区'; province[31][3]='台湾省'; province[32][3]='香港特别行政区'; province[33][3]='澳门特别行政区';
+	    $(document).ready(function show(){
+			if($.cookie('user_id')!=null){
+				userId=$.cookie('user_id');
+            	userName=$.cookie('user_name');
+				$("#username").html("业务员"+userName); 
+            	userTel=$.cookie('user_telCode');
+            	transNodeId=$.cookie('user_dptID');
+            	getNode(transNodeId);
+            	findSendCount();
+            	userStatus=$.cookie('user_status');
+            	document.getElementById('denglu').style.display = "none";
+            	
+	    	}else{
+	    		alert("您未登录，请先登录！");
+	    		window.location.href="login.html";
+	    	}
+		});
+	    function getNode(transNodeId){
+    		$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Misc/getNode/"+transNodeId,
+    	        type: "get",
+    	        dataType: "json",
+    	        success: function(data){ 	           
+    	            setData(data);  
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常");
+    	        }
+    	    });
+    		return false;
+    	}
+	    function setData(data) {
+	    	transNodeName=data.nodeName;
+	    	$("#nodename").html("营业网点:"+transNodeName); 
+	 	  	$.cookie('node_name', transNodeName,{ path: '/' });
+        }
+	    function findSendCount(){
+	    	$.ajax({
+    	        url: "http://39.99.212.164:8080/TestCxfHibernate/REST/Domain/getExpressList",
+    	        type: "get",
+    	        dataType: "json",
+    	        async:false,
+    	        success: function(data){ 	           
+    	            setCount(data);  
+    	        },
+    	        error: function(msg){
+    	            alert("ajax连接异常");
+    	        }
+    	    });
+	    }
+	    function setCount(data){
+	    	var i;
+	    	var j;
+	    	for(i=0;i<data.length;i++){
+	    		//alert(data[i].sender.regionCode.toString());
+	    		sendstr=data[i].sender.regionCode.toString();
+	    		//sendstr=data[i].acc1.toString();
+	    		//receivestr=data[i].acc2.toString();
+	    		receivestr=data[i].recever.regionCode.toString();
+	    		for(j=0;j<34;j++){
+	    			if(province[j][0]==sendstr.slice(0,2)){
+	    				province[j][1]++;
+	    				//alert(j+"+++");
+	    			}
+	    			if(province[j][0]==receivestr.slice(0,2)){
+	    				province[j][2]++;
+	    			}
+	    		}
+	    	}
+	    	addData();
+	    	
+	    }
+	    function addData(){
+	    	var a=0;var b=0;
+	    	for(i=0;i<34;i++){
+	    		if(province[i][1]!=0){
+	    			var value=province[i][1];
+	    			var name=province[i][3];
+					value1[a++]={value: value,name:name};
+	    		}
+	    		if(province[i][2]!=0){
+	    			value2[b++]={value: province[i][2],name:province[i][3]};
+//	    			var obj=new Object();
+//	                obj.name=province[i][3]; 
+//	                obj.value=province[i][2];
+//	                value2[b++]=obj;
+	                //alert(value2[b-1].name+"+"+value2[b-1].value);
+	    		}
+	    	}
+	    	show();
+	    }
+    </script>
+</head>
+
+<body data-type="chart">
+
+<header class="am-topbar am-topbar-inverse admin-header">
+        <div class="am-topbar-brand">
+            <a href="index.html" class="">
+                <img src="assets/img/logo.png" height="50px" width="60px">
+                <span style="color: #99BBFF">卓越快递</span>
+            </a>
+        </div>
+        <div class="am-icon-list tpl-header-nav-hover-ico am-fl am-margin-right">
+
+        </div>
+
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list tpl-header-list">
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="am-icon-bell-o"></span> 提醒 <span class="am-badge tpl-badge-success am-round">5</span>
+                    </a>
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-content-external">
+                            <h3>你有 <span class="tpl-color-success">5</span> 条提醒</h3><a href="###">全部</a></li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-plus tpl-dropdown-ico-btn-size tpl-badge-success"></span> 【预览模块】移动端 查看时 手机、电脑框隐藏。</a>
+                            <span class="tpl-dropdown-list-fr">3小时前</span>
+                        </li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-check tpl-dropdown-ico-btn-size tpl-badge-danger"></span> 移动端，导航条下边距处理</a>
+                            <span class="tpl-dropdown-list-fr">15分钟前</span>
+                        </li>
+                        <li class="tpl-dropdown-list-bdbc"><a href="#" class="tpl-dropdown-list-fl"><span class="am-icon-btn am-icon-bell-o tpl-dropdown-ico-btn-size tpl-badge-warning"></span> 追加统计代码</a>
+                            <span class="tpl-dropdown-list-fr">2天前</span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle  style="display:">
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="am-icon-comment-o">消息</span>  <span class="am-badge tpl-badge-danger am-round">1</span>
+                    </a>
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-content-external">
+                            <h3>你有 <span class="tpl-color-danger">1</span> 条新消息</h3><a href="###">全部</a></li>
+                        <li>
+                            <a href="#" class="tpl-dropdown-content-message">
+                                <span class="tpl-dropdown-content-photo">
+                      <img src="assets/img/user08.png" alt=""> </span>
+                                <span class="tpl-dropdown-content-subject">
+                      <span class="tpl-dropdown-content-from"> 小张 </span>
+                                <span class="tpl-dropdown-content-time">10分钟前 </span>
+                                </span>
+                                <span class="tpl-dropdown-content-font"> 今天也要加油挣米粒呀 </span>
+                            </a>
+   
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+                    <a class="am-dropdown-toggle tpl-header-list-link" href="">
+                        <span class="tpl-header-list-user-nick" id="username"></span><span class="tpl-header-list-user-ico"> <img src="assets/img/user08.png"></span>
+                    </a>
+                    <ul class="am-dropdown-content">
+                        <li><a href="#" onclick="logout()"><span class="am-icon-power-off"></span> 退出</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="tpl-header-list-link" onclick="logout()"><span class="am-icon-sign-out tpl-header-list-ico-out-size"></span></a></li>
+            </ul>
+        </div>
+    </header>
+	
+    <div class="tpl-page-container tpl-page-header-fixed">
+
+
+        <div class="tpl-left-nav tpl-left-nav-hover">
+            <div class="tpl-left-nav-title">
+           		     功能列表
+            </div>
+            <div class="tpl-left-nav-list">
+                <ul class="tpl-left-nav-menu">
+                    <li class="tpl-left-nav-item">
+                        <a href="index.html" class="nav-link">
+                            <i class="am-icon-home"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="clientmanage.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-group"></i>
+                            <span>客户管理</span>
+                            <i class="tpl-left-nav-content tpl-badge-danger"  style="display:none">12</i>
+                        </a>
+                    </li>
+					<li class="tpl-left-nav-item">
+                        <a href="expresssheet.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-pencil-square-o"></i>
+                            <span>快递单生成</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="transnodemanage.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-institution"></i>
+                            <span>网点管理</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-send"></i>
+                            <span>快递查询</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                                <a href="IdQuery.html">
+                                    <span>快递单号查询</span>
+                                </a>
+								<a href="TelReceiveQuery.html">
+                                    <span>收货人手机号查询</span>
+                                </a>
+                                <a href="TelSendQuery.html">
+                                    <span>寄件人手机号查询</span>
+                                </a>
+
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-truck"></i>
+                            <span>包裹管理</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                            	 <a href="CreatePackage.html">
+                                    <span>包裹创建</span>
+                                </a>
+                            	
+                            	<a href="PackageList.html">
+                                    <span>本网点包裹管理</span>
+                                </a>
+                            	
+                            	
+                                <a href=" PackageIdQuery.html">
+                                    <span>包裹内容查询</span>
+                                </a>
+
+                                <a href="PackageHistory.html">
+                                    <span>包裹跟踪</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+ 					<li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list active">
+                            <i class="am-icon-bar-chart"></i>
+                            <span>数据统计</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right"></i>
+                        </a>
+                        <!-- <ul class="tpl-left-nav-sub-menu" style="display: block;"> -->
+                        <ul class="tpl-left-nav-sub-menu" style="display: block;">
+                            <li>
+                                <a href="https://bot.4paradigm.com/admin/system/robot/history?page=1&keyword=&start=&end=&channelType=ALL" target="_blank">
+                                    <span>服务评价统计</span>
+                                </a>
+                                <a href="sendStatistics.html" class="active">
+                                    <span>寄件地快件统计</span>
+                                </a>
+                                <a href="sendStatistics.html">
+                                    <span>收件地快件统计</span>
+                                </a>
+                                <a href="timeStatistics.html">
+                                    <span>寄件时间统计</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="tpl-left-nav-item" id="denglu">
+                        <a href="login.html" class="nav-link tpl-left-nav-link-list">
+                            <i class="am-icon-key"></i>
+                            <span>登录</span>
+
+                        </a>
+                    </li>
+                     <li class="tpl-left-nav-item">
+                        <a class="nav-link tpl-left-nav-link-list" onclick="logout()">
+                            <i class="am-icon-power-off"></i>
+                            <span>注销</span>
+
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="tpl-content-wrapper">
+            <div class="tpl-content-page-title">
+              	  卓越快递
+            </div>
+            <ol class="am-breadcrumb">
+                <li><a href="index.html" class="am-icon-home">首页</a></li>
+                <li class="am-active">今日需揽收</li>
+            </ol>
+            <div class="tpl-content-scope">
+                <div class="note note-info">
+                    <h3>
+                        <span class="close" data-close="note" id="nodename"> </span>
+                    </h3>
+                    <p>今天也要努力工作呀！</p>
+                </div>
+            </div>
+		 <div id="container" style="height: 300px;background-color: rgb(255,255,255,.5);margin-top: 20px;">
+		 </div>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+       <script type="text/javascript">
+			function show(){
+				var dom = document.getElementById("container");
+			var myChart = echarts.init(dom);
+			var app = {};
+			
+			option = null;
+			option = {
+			    title: {
+			        text: '地区寄件收件统计',
+			        subtext: '以省为单位',
+			        left: 'center'
+			    },  
+			    tooltip: {
+			        trigger: 'item',
+			        formatter: '{a} <br/>{b} : {c} ({d}%)'
+			    }, 
+
+				series: [
+					{
+						name: '地区寄件统计',
+						type: 'pie',
+						radius: [20, 110],
+						center: ['25%', '50%'],
+						roseType: 'radius',
+						label: {
+							show: false
+						},
+						emphasis: {
+							label: {
+								show: true
+							}
+						},
+						data: value1
+					},
+			        {
+			            name: '地区收件统计',
+			            type: 'pie',
+			            radius: [30, 110],
+			            center: ['75%', '50%'],
+			            roseType: 'area',
+						label: {
+			                show: false
+			            },
+			            emphasis: {
+			                label: {
+			                    show: true
+			                }
+			            },
+			            data: value2
+			        }
+				]
+			};
+			if (option && typeof option === "object") {
+				myChart.setOption(option, true);
+			}
+			}
+       </script>
+	
+	
+	
+	    </div>
+	</div>
+        
+
+   
+
+	
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/amazeui.min.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script> 
+</body>
+
+</html>
